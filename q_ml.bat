@@ -1,0 +1,9 @@
+IF NOT EXIST Q:\NUL goto NOT_EXIST
+
+:EXIST
+SUBST Q: /d
+
+:NOT_EXIST
+SUBST Q: .
+
+pause

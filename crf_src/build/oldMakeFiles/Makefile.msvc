@@ -1,0 +1,51 @@
+CC = cl
+CXXC = cl
+LINK=link
+CFLAGS =  /O2 /GA /GL /Gy /Oi /O2 /Ob2 /nologo /W3 /Zi /EHsc /MTd /wd4244
+LIB_PATH = /LIBPATH:"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v3.2\/lib/Win32" /LIBPATH:"..\cuda\common\lib" 
+LDFLAGS = /link  /debug /OPT:REF /OPT:ICF /LTCG  /NXCOMPAT $(LIB_PATH) /DYNAMICBASE ADVAPI32.LIB /DEFAULTLIB:cudart.lib /DEFAULTLIB:cutil32D.lib /DEFAULTLIB:kernel32.lib /DEFAULTLIB:user32.lib /DEFAULTLIB:gdi32.lib /DEFAULTLIB:winspool.lib /DEFAULTLIB:comdlg32.lib /DEFAULTLIB:shell32.lib /DEFAULTLIB:ole32.lib /DEFAULTLIB:oleaut32.lib /DEFAULTLIB:uuid.lib /DEFAULTLIB:odbc32.lib /DEFAULTLIB:odbccp32.lib 
+DEFS =  -D_WIN32 -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE -DDLL_EXPORT -DHAVE_WINDOWS_H -DVERSION="\"0.54\"" -DPACKAGE="\"CRF++\""
+INC = -I. -I.. -I"c:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v3.2\include" -I"..\cuda\common\inc" -I"..\cuda\shared\inc"
+DEL = del
+
+# CUDA Definitions
+CUDA_CC = "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v3.2\\bin\nvcc.exe"
+CUDA_CFLAGS = -gencode=arch=compute_10,code=\"sm_10,compute_10\" -gencode=arch=compute_20,code=\"sm_20,compute_20\"  --machine 32 -ccbin "d:\Program Files\Microsoft Visual Studio 9.0\VC\bin"    -Xcompiler "/EHsc /W3 /nologo /Od /Zi   /MTd  " 
+INC_CUDA = -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v3.2\/include" -I"./" -I"../cuda/common/inc" -I"../cuda/shared/inc" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v3.2\\include"
+DEFS_CUDA = -maxrregcount=32 
+
+
+
+
+OBJ = encoder.obj feature.obj feature_cache.obj libcrfpp.obj feature_index.obj node.obj param.obj path.obj tagger.obj lbfgs.obj
+
+.c.obj:
+	$(CXXC) $(CFLAGS) $(INC) $(DEFS) -c $<
+
+.cpp.obj:
+	$(CXXC) $(CFLAGS) $(INC) $(DEFS) -c $<
+	              
+.c.obj:
+	$(CC) $(CFLAGS) $(INC) $(DEFS) -c  $<
+
+all: libcrfpp crf_learn crf_test 
+
+cuda_obj:
+	$(CUDA_CC) $(CUDA_CFLAGS) $(INC_CUDA) $(DEFS_CUDA)  --compile -o "cppIntegration.cu.obj" cppIntegration.cu
+
+cuda: cuda_obj main.obj cppIntegration_gold.obj
+	$(LINK) $(LDFLAGS) $(LIB_PATH) /out:$@.exe main.obj cppIntegration_gold.obj cppIntegration.cu.obj /MACHINE:X86 cudart.lib cutil32D.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+
+libcrfpp: $(OBJ) cuda_obj cppIntegration_gold.obj 
+        $(LINK) $(LDFLAGS) /out:$@.dll $(OBJ) cppIntegration_gold.obj cppIntegration.cu.obj /dll
+		cp ../cuda_test/lib/* . 
+		
+crf_learn: $(OBJ) crf_learn.obj 
+	$(LINK) $(LDFLAGS)  /out:$@.exe crf_learn.obj libcrfpp.lib 
+	
+crf_test: $(OBJ) crf_test.obj
+	$(LINK) $(LDFLAGS) /out:$@.exe crf_test.obj libcrfpp.lib 
+	
+clean:
+	del *.obj crf_learn.exe crf_test.exe *.dll
+      

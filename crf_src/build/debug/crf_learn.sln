@@ -1,0 +1,21 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB9-8B4A-11D0-8D11-00A0C91BC942}") = "crf_learn.exe", "..\crf_learn.exe", "{1274D062-50F8-4CF8-83B6-DE0CECE22EA1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Default = Debug|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1274D062-50F8-4CF8-83B6-DE0CECE22EA1}.Debug|Default.ActiveCfg = Debug
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		AMDCaPersistentConfig = Debug|Default
+		AMDCaPersistentStartup = crf_learn.exe
+		AMDCaProjectFile = D:\Profiles\pntx43\Desktop\e6998-3\project\src\lib\CRF++-0.54\debug\CodeAnalyst\crf_learn.caw
+	EndGlobalSection
+EndGlobal
